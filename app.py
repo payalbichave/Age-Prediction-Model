@@ -1,11 +1,10 @@
 import streamlit as st
-
-from . import overview
-from . import data_analysis
-from . import model_results
-from . import final_model
-from . import prediction
-from . import conclusion
+import overview
+import data_analysis
+import model_results
+import final_model
+import prediction
+import conclusion
 
 
 st.set_page_config(

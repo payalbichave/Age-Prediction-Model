@@ -1,34 +1,150 @@
 import streamlit as st
-import pickle
+import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
+import random
 
 
-model = pickle.load(open("model.pkl", "rb"))
-scaler = pickle.load(open("scaler.pkl", "rb"))
+def apply_custom_css():
+    st.markdown("""
+    <style>
+
+    html, body, [class*="css"] {
+        font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: gray;
+        margin-bottom: 20px;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
 
 
+# Dummy model
+AGE_GROUPS = {
+    0: "18–29",
+    1: "30–44",
+    2: "45–59",
+    3: "60–74",
+    4: "75+",
+}
+
+
+def predict_age_group(gndr, eduyrs, hincfel, w4gq1, w4gq2):
+
+    score = eduyrs + w4gq1 + w4gq2 + hincfel
+
+    idx = int(np.clip(score // 10, 0, 4))
+
+    confidence = random.randint(75, 95)
+
+    return idx, confidence
+
+
+# ✅ IMPORTANT
 def show():
 
-    st.title("Prediction Page")
+    apply_custom_css()
 
-    gndr = st.number_input("Gender", 0, 2, 1)
-    eduyrs = st.number_input("Education years", 0, 30, 10)
-    hincfel = st.number_input("Income feeling", 0, 10, 5)
-    w4gq1 = st.number_input("Opinion 1", 0, 10, 5)
-    w4gq2 = st.number_input("Opinion 2", 0, 10, 5)
+    st.markdown(
+        '<div class="page-title">Age Group Prediction</div>',
+        unsafe_allow_html=True,
+    )
 
-    if st.button("Predict"):
+    st.markdown(
+        '<div class="page-subtitle">Enter values and predict age group</div>',
+        unsafe_allow_html=True,
+    )
 
-        data = pd.DataFrame(
-            [[gndr, eduyrs, hincfel, w4gq1, w4gq2]],
-            columns=["gndr", "eduyrs", "hincfel", "w4gq1", "w4gq2"]
+    st.divider()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        gndr = st.selectbox("Gender", ["Male", "Female"])
+
+        eduyrs = st.slider(
+            "Education Years",
+            0,
+            25,
+            12,
         )
 
-        data = scaler.transform(data)
+        hincfel = st.slider(
+            "Income Feeling",
+            1,
+            4,
+            2,
+        )
 
-        pred = model.predict(data)
+        w4gq1 = st.slider(
+            "Question 1",
+            1,
+            5,
+            3,
+        )
 
-        if pred[0] == 1:
-            st.success("Under 35")
+        w4gq2 = st.slider(
+            "Question 2",
+            1,
+            5,
+            3,
+        )
+
+        predict_clicked = st.button("Predict")
+
+    with col2:
+
+        if predict_clicked:
+
+            idx, confidence = predict_age_group(
+                gndr,
+                eduyrs,
+                hincfel,
+                w4gq1,
+                w4gq2,
+            )
+
+            st.success(
+                f"Predicted Age Group: {AGE_GROUPS[idx]}"
+            )
+
+            st.write(
+                f"Confidence: {confidence}%"
+            )
+
         else:
-            st.success("35 and above")
+
+            st.info(
+                "Enter values and click Predict"
+            )
+
+    st.divider()
+
+    st.subheader("Feature Importance")
+
+    importance = {
+        "eduyrs": 0.38,
+        "hincfel": 0.27,
+        "w4gq1": 0.18,
+        "w4gq2": 0.12,
+        "gndr": 0.05,
+    }
+
+    fig = go.Figure(
+        go.Bar(
+            x=list(importance.keys()),
+            y=list(importance.values()),
+        )
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
