@@ -1,66 +1,49 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import pickle
 import plotly.graph_objects as go
-import random
 
 
-def apply_custom_css():
+# ---------- LOAD MODEL ----------
+model = pickle.load(open("model.pkl", "rb"))
+scaler = pickle.load(open("scaler.pkl", "rb"))
+
+
+# ---------- LABELS ----------
+AGE_GROUPS = {
+    1: "Under 35",
+    2: "35 and above",
+}
+
+
+# ---------- CSS ----------
+def apply_css():
     st.markdown("""
     <style>
 
-    html, body, [class*="css"] {
-        font-family: Arial, sans-serif;
+    .title {
+        font-size: 30px;
+        font-weight: 700;
     }
 
-    .page-title {
-        font-size: 2.2rem;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .page-subtitle {
+    .subtitle {
         color: gray;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     </style>
     """, unsafe_allow_html=True)
 
 
-# Dummy model
-AGE_GROUPS = {
-    0: "18–29",
-    1: "30–44",
-    2: "45–59",
-    3: "60–74",
-    4: "75+",
-}
-
-
-def predict_age_group(gndr, eduyrs, hincfel, w4gq1, w4gq2):
-
-    score = eduyrs + w4gq1 + w4gq2 + hincfel
-
-    idx = int(np.clip(score // 10, 0, 4))
-
-    confidence = random.randint(75, 95)
-
-    return idx, confidence
-
-
-# ✅ IMPORTANT
+# ---------- PAGE ----------
 def show():
 
-    apply_custom_css()
+    apply_css()
 
+    st.markdown('<div class="title">Age Group Prediction</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="page-title">Age Group Prediction</div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        '<div class="page-subtitle">Enter values and predict age group</div>',
+        '<div class="subtitle">Enter user values to predict age group</div>',
         unsafe_allow_html=True,
     )
 
@@ -68,33 +51,34 @@ def show():
 
     col1, col2 = st.columns(2)
 
+    # ---------- INPUT ----------
     with col1:
 
-        gndr = st.selectbox("Gender", ["Male", "Female"])
+        gndr = st.selectbox("Gender", [1, 2])
 
-        eduyrs = st.slider(
+        eduyrs = st.number_input(
             "Education Years",
             0,
             25,
             12,
         )
 
-        hincfel = st.slider(
-            "Income Feeling",
+        hincfel = st.number_input(
+            "Income Feeling (1–4)",
             1,
             4,
             2,
         )
 
-        w4gq1 = st.slider(
-            "Question 1",
+        w4gq1 = st.number_input(
+            "Agreement Level (1–5)",
             1,
             5,
             3,
         )
 
-        w4gq2 = st.slider(
-            "Question 2",
+        w4gq2 = st.number_input(
+            "Satisfaction Level (1–5)",
             1,
             5,
             3,
@@ -102,49 +86,60 @@ def show():
 
         predict_clicked = st.button("Predict")
 
+    # ---------- RESULT ----------
     with col2:
 
         if predict_clicked:
 
-            idx, confidence = predict_age_group(
-                gndr,
-                eduyrs,
-                hincfel,
-                w4gq1,
-                w4gq2,
+            input_data = np.array(
+                [[gndr, eduyrs, hincfel, w4gq1, w4gq2]]
             )
+
+            input_scaled = scaler.transform(input_data)
+
+            pred = model.predict(input_scaled)[0]
 
             st.success(
-                f"Predicted Age Group: {AGE_GROUPS[idx]}"
-            )
-
-            st.write(
-                f"Confidence: {confidence}%"
+                f"Predicted Age Group: {AGE_GROUPS[pred]}"
             )
 
         else:
 
-            st.info(
-                "Enter values and click Predict"
-            )
+            st.info("Enter values and click Predict")
 
     st.divider()
 
+    # ---------- FEATURE IMPORTANCE ----------
     st.subheader("Feature Importance")
 
-    importance = {
-        "eduyrs": 0.38,
-        "hincfel": 0.27,
-        "w4gq1": 0.18,
-        "w4gq2": 0.12,
-        "gndr": 0.05,
-    }
+     
+
+    feature_names = [
+        "gndr",
+        "eduyrs",
+        "hincfel",
+        "w4gq1",
+        "w4gq2",
+    ]
+
+    importance = model.feature_importances_
 
     fig = go.Figure(
         go.Bar(
-            x=list(importance.keys()),
-            y=list(importance.values()),
+            x=feature_names,
+            y=importance,
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(
+        height=350,
+        margin=dict(l=10, r=10, t=10, b=10),
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        key="real_feature_chart",
+    )
+
+    

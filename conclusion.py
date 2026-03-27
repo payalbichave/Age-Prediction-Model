@@ -3,30 +3,70 @@ import plotly.graph_objects as go
 import pandas as pd
 
 
+# ---------- CSS ----------
 def apply_custom_css():
     st.markdown("""
     <style>
 
-    html, body, [class*="css"] {
-        font-family: Arial, sans-serif;
-    }
-
     .page-title {
-        font-size: 2.2rem;
-        font-weight: bold;
-        margin-bottom: 5px;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 0px;
     }
 
     .page-subtitle {
-        color: gray;
-        margin-bottom: 20px;
+        color: #9aa0a6;
+        margin-bottom: 10px;
+    }
+
+    /* metric box */
+    .metric-box {
+        background: #0f172a;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #22d3ee;
+    }
+
+    .metric-label {
+        font-size: 13px;
+        color: #94a3b8;
+    }
+
+    /* achievement box */
+    .ach-box {
+        background: #0f172a;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    /* step box */
+    .step-box {
+        background: #0f172a;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .step-title {
+        color: #22d3ee;
+        font-size: 13px;
+        font-weight: 600;
     }
 
     </style>
     """, unsafe_allow_html=True)
 
 
-# ✅ IMPORTANT
+# ---------- PAGE ----------
 def show():
 
     apply_custom_css()
@@ -43,12 +83,12 @@ def show():
 
     st.divider()
 
-    # metrics
+    # ---------- METRICS ----------
     col1, col2, col3, col4, col5 = st.columns(5)
 
     metrics = [
         ("5", "Models"),
-        ("0.89", "Best Accuracy"),
+        ("0.74", "Best Accuracy"),
         ("5", "Features"),
         ("SMOTE", "Balancing"),
         ("GB", "Final Model"),
@@ -58,23 +98,46 @@ def show():
         [col1, col2, col3, col4, col5],
         metrics
     ):
-        col.metric(l, v)
+        col.markdown(
+            f"""
+            <div class="metric-box">
+                <div class="metric-value">{v}</div>
+                <div class="metric-label">{l}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     st.divider()
 
+    # ---------- ACHIEVEMENTS ----------
     st.subheader("Key Achievements")
 
-    st.write("""
-    - Performed data analysis
-    - Handled class imbalance using SMOTE
-    - Tested multiple ML models
-    - Selected Gradient Boosting
-    - Built interactive dashboard
-    - Implemented live prediction
-    """)
+    achievements = [
+        "Performed data analysis",
+        "Handled class imbalance using SMOTE",
+        "Tested multiple ML models",
+        "Selected Gradient Boosting",
+        "Built interactive dashboard",
+        "Implemented live prediction",
+    ]
+
+    cols = st.columns(3)
+
+    for i, text in enumerate(achievements):
+        with cols[i % 3]:
+            st.markdown(
+                f"""
+                <div class="ach-box">
+                    {text}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.divider()
 
+    # ---------- WORKFLOW ----------
     st.subheader("Workflow")
 
     steps = [
@@ -88,11 +151,24 @@ def show():
         "Dashboard creation",
     ]
 
-    for s in steps:
-        st.write("•", s)
+    cols = st.columns(4)
+
+    for i, step in enumerate(steps):
+        with cols[i % 4]:
+            st.markdown(
+                f"""
+                <div class="step-box">
+                    <div class="step-title">
+                        Step {i+1}<br>{step}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.divider()
 
+    # ---------- ACCURACY ----------
     st.subheader("Accuracy Comparison")
 
     models = [
@@ -104,11 +180,11 @@ def show():
     ]
 
     acc = [
-        0.76,
-        0.82,
-        0.85,
-        0.86,
-        0.89,
+        0.72,
+        0.51,
+        0.62,
+        0.69,
+        0.74,
     ]
 
     fig = go.Figure(
@@ -118,8 +194,15 @@ def show():
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.success(
-        "Project completed successfully"
+    fig.update_layout(
+        height=350,
+        margin=dict(l=10, r=10, t=10, b=10),
     )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        key="acc_chart"
+    )
+
+    st.success("Project completed successfully")
