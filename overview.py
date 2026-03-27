@@ -1,91 +1,86 @@
 import streamlit as st
 
+
 def show():
 
-    # ===== CUSTOM STYLE =====
+    # ===== PAGE HEADER =====
     st.markdown("""
-        <style>
-        .main-title {
-            font-size: 40px;
-            font-weight: 600;
-            color: white;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #bbb;
-            margin-bottom: 30px;
-        }
-        .card {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            margin-bottom: 20px;
-        }
-        </style>
+        <div class="page-header">
+            <div class="page-header-tag">Introduction</div>
+            <div class="page-header-title">Age Group Prediction</div>
+            <div class="page-header-sub">Classifying individuals into age groups using survey-based machine learning</div>
+        </div>
     """, unsafe_allow_html=True)
 
-    # ===== TITLE =====
-    st.markdown('<div class="main-title">Age Group Prediction Dashboard</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Predict age group using survey-based data</div>', unsafe_allow_html=True)
-
-    st.markdown("---")
+    st.divider()
 
     # ===== PROJECT OVERVIEW =====
-    st.subheader("Project Overview")
-
+    st.markdown('<div class="section-title">Project Overview</div>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="card">
-    This project aims to predict whether a person belongs to the age group <b>under 35</b> or <b>35+</b> 
-    based on survey responses. 
-
-    The model learns patterns from features like education, income feeling, and opinions to classify users.
-    </div>
+        <div class="info-card">
+            This project predicts whether a person belongs to the age group <strong style="color:#f1f5f9">Under 35</strong>
+            or <strong style="color:#f1f5f9">35 and above</strong> based on survey responses.
+            The model learns patterns from demographic and opinion-based features to perform binary classification.
+        </div>
     """, unsafe_allow_html=True)
 
     # ===== DATASET OVERVIEW =====
-    st.subheader("Dataset Overview")
+    st.markdown('<div class="section-title">Dataset Overview</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("""
-        <div class="card">
-        <b>Features:</b><br>
-        • Gender <br>
-        • Education Years <br>
-        • Income Feeling <br>
-        • Opinion Questions
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="section-title" style="font-size:13px;border:none;padding:0;margin-bottom:8px;">Input Features</div>', unsafe_allow_html=True)
+        for feature in ["Gender", "Education Years", "Income Feeling", "Agreement Level (w4gq1)", "Satisfaction Level (w4gq2)"]:
+            st.markdown(f"""
+                <div class="list-item">
+                    <div class="list-item-dot"></div>
+                    <span>{feature}</span>
+                </div>
+            """, unsafe_allow_html=True)
 
     with col2:
+        st.markdown('<div class="section-title" style="font-size:13px;border:none;padding:0;margin-bottom:8px;">Target Variable</div>', unsafe_allow_html=True)
         st.markdown("""
-        <div class="card">
-        <b>Target Variable:</b> agegroup35 <br><br>
-        • 1 → Under 35 <br>
-        • 2 → 35 and above
-        </div>
+            <div class="info-card" style="margin-bottom:8px;">
+                <strong style="color:#f1f5f9">agegroup35</strong>
+            </div>
         """, unsafe_allow_html=True)
+        for label in ["Class 1 — Under 35", "Class 2 — 35 and above"]:
+            st.markdown(f"""
+                <div class="list-item">
+                    <div class="list-item-dot"></div>
+                    <span>{label}</span>
+                </div>
+            """, unsafe_allow_html=True)
 
-    # ===== ML INFO =====
-    st.subheader("Model Information")
+    st.divider()
 
+    # ===== MODEL INFORMATION =====
+    st.markdown('<div class="section-title">Model Information</div>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="card">
-    This is a <b>classification problem</b>. Multiple models were tested, and after handling 
-    class imbalance using SMOTE, <b>Gradient Boosting</b> was selected as the final model 
-    due to its better and balanced performance.
-    </div>
+        <div class="info-card">
+            This is a <strong style="color:#f1f5f9">binary classification</strong> problem.
+            Multiple machine learning algorithms were evaluated and compared.
+            Class imbalance was addressed using <strong style="color:#f1f5f9">SMOTE</strong> (Synthetic Minority Oversampling Technique).
+            <strong style="color:#f1f5f9">Gradient Boosting</strong> was selected as the final model based on its superior
+            and balanced performance across accuracy, precision, and recall.
+        </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    # ===== FOOTER =====
-    st.markdown("""
-    <div style='text-align: center; color: gray;'>
-    Machine Learning Project • Streamlit Dashboard
-    </div>
-    """, unsafe_allow_html=True)
+    # ===== QUICK STATS =====
+    st.markdown('<div class="section-title">At a Glance</div>', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    stats = [
+        ("5", "Models Tested"),
+        ("5", "Features"),
+        ("74%", "Best Accuracy"),
+        ("SMOTE", "Balancing Method"),
+    ]
+    for col, (val, label) in zip([c1, c2, c3, c4], stats):
+        col.markdown(f"""
+            <div class="metric-card metric-card-accent">
+                <div class="metric-card-value">{val}</div>
+                <div class="metric-card-label">{label}</div>
+            </div>
+        """, unsafe_allow_html=True)
