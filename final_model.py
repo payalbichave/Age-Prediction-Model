@@ -121,12 +121,12 @@ def show():
 
         st.subheader("Model Comparison")
 
-        models = ["Gradient Boosting", "Random Forest", "SVM"]
+        models = ["Gradient Boosting", "Random Forest"]
 
-        accuracy = [0.76, 0.71, 0.84]
-        precision = [0.27, 0.16, 0.00]
-        recall = [0.22, 0.22, 0.00]
-        f1 = [0.30, 0.18, 0.00]
+        accuracy = [0.76, 0.71]
+        precision = [0.27, 0.16]
+        recall = [0.22, 0.22]
+        f1 = [0.30, 0.18]
 
         fig = go.Figure()
 

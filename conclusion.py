@@ -8,8 +8,12 @@ def apply_custom_css():
     st.markdown("""
     <style>
 
+    html, body, [class*="css"] {
+        font-size: 15px;
+    }
+
     .page-title {
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 700;
         margin-bottom: 0px;
     }
@@ -17,6 +21,7 @@ def apply_custom_css():
     .page-subtitle {
         color: #9aa0a6;
         margin-bottom: 10px;
+        font-size: 15px;
     }
 
     /* metric box */
@@ -25,16 +30,17 @@ def apply_custom_css():
         padding: 15px;
         border-radius: 10px;
         text-align: center;
+        font-size: 15px;
     }
 
     .metric-value {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: bold;
         color: #22d3ee;
     }
 
     .metric-label {
-        font-size: 13px;
+        font-size: 15px;
         color: #94a3b8;
     }
 
@@ -44,7 +50,7 @@ def apply_custom_css():
         padding: 12px;
         border-radius: 8px;
         margin-bottom: 8px;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     /* step box */
@@ -54,12 +60,22 @@ def apply_custom_css():
         border-radius: 8px;
         text-align: center;
         margin-bottom: 10px;
+        font-size: 15px;
     }
 
     .step-title {
         color: #22d3ee;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
+    }
+
+    /* interpretation box */
+    .interpret-box {
+        background: #0f172a;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 15px;
+        line-height: 1.6;
     }
 
     </style>
@@ -168,41 +184,20 @@ def show():
 
     st.divider()
 
-    # ---------- ACCURACY ----------
-    st.subheader("Accuracy Comparison")
+    # ---------- INTERPRETATION ----------
+    st.subheader("Project Interpretation")
 
-    models = [
-        "KNN",
-        "SVM",
-        "RF",
-        "ExtraTrees",
-        "GradientBoosting",
-    ]
+    st.markdown(
+        """
+        <div class="interpret-box">
 
-    acc = [
-        0.72,
-        0.51,
-        0.62,
-        0.69,
-        0.74,
-    ]
+        The analysis shows that demographic and opinion-based features can be used to classify individuals into age groups with good accuracy.
+        <br><br>
+        The results indicate that factors such as education level, income perception, and personal opinions have a measurable relationship with age group.
+        <br><br>
+        This demonstrates that machine learning can identify hidden patterns in survey data and use them to predict demographic characteristics even when the actual age is not provided.
 
-    fig = go.Figure(
-        go.Bar(
-            x=models,
-            y=acc,
-        )
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-
-    fig.update_layout(
-        height=350,
-        margin=dict(l=10, r=10, t=10, b=10),
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-        key="acc_chart"
-    )
-
-    st.success("Project completed successfully")

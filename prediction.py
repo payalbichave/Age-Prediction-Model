@@ -32,6 +32,14 @@ def apply_css():
         margin-bottom: 10px;
     }
 
+    .insight-box {
+        background: #0f172a;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -42,6 +50,7 @@ def show():
     apply_css()
 
     st.markdown('<div class="title">Age Group Prediction</div>', unsafe_allow_html=True)
+
     st.markdown(
         '<div class="subtitle">Enter user values to predict age group</div>',
         unsafe_allow_html=True,
@@ -103,6 +112,72 @@ def show():
                 f"Predicted Age Group: {AGE_GROUPS[pred]}"
             )
 
+            # ---------- INSIGHT ----------
+            st.subheader("Prediction Insight")
+
+            reasons = []
+
+            # ----- If predicted older -----
+            if pred == 2:
+
+                if eduyrs > 15:
+                    reasons.append(
+                        "Higher education years are associated with older age group"
+                    )
+
+                if hincfel >= 3:
+                    reasons.append(
+                        "Higher income perception is more common in older individuals"
+                    )
+
+                if w4gq1 >= 4:
+                    reasons.append(
+                        "Opinion pattern matches responses seen in older age group"
+                    )
+
+                if w4gq2 >= 4:
+                    reasons.append(
+                        "Higher satisfaction level suggests older age group"
+                    )
+
+            # ----- If predicted younger -----
+            else:
+
+                if eduyrs < 12:
+                    reasons.append(
+                        "Lower education years are more common in younger group"
+                    )
+
+                if hincfel <= 2:
+                    reasons.append(
+                        "Lower income perception matches younger age group"
+                    )
+
+                if w4gq1 <= 3:
+                    reasons.append(
+                        "Opinion response closer to younger age pattern"
+                    )
+
+                if w4gq2 <= 3:
+                    reasons.append(
+                        "Lower satisfaction values are common in younger group"
+                    )
+
+            if len(reasons) == 0:
+                reasons.append(
+                    "Prediction based on overall combination of features"
+                )
+
+            for r in reasons:
+                st.markdown(
+                    f"""
+                    <div class="insight-box">
+                    {r}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
         else:
 
             st.info("Enter values and click Predict")
@@ -111,8 +186,6 @@ def show():
 
     # ---------- FEATURE IMPORTANCE ----------
     st.subheader("Feature Importance")
-
-     
 
     feature_names = [
         "gndr",
@@ -141,5 +214,3 @@ def show():
         use_container_width=True,
         key="real_feature_chart",
     )
-
-    
