@@ -1,0 +1,1 @@
+- [x] 4. Git pull origin main&#10;- [x] 5. Verify git status and log
