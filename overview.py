@@ -12,7 +12,23 @@ def show():
         </div>
     """, unsafe_allow_html=True)
 
-    st.divider()
+  
+     # ===== QUICK STATS =====
+    st.markdown('<div class="section-title">At a Glance</div>', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    stats = [
+        ("5", "Models Tested"),
+        ("5", "Features"),
+        ("74%", "Best Accuracy"),
+        ("SMOTE", "Balancing Method"),
+    ]
+    for col, (val, label) in zip([c1, c2, c3, c4], stats):
+        col.markdown(f"""
+            <div class="metric-card metric-card-accent">
+                <div class="metric-card-value">{val}</div>
+                <div class="metric-card-label">{label}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     # ===== PROJECT OVERVIEW =====
     st.markdown('<div class="section-title">Project Overview</div>', unsafe_allow_html=True)
@@ -68,19 +84,4 @@ def show():
         </div>
     """, unsafe_allow_html=True)
 
-    # ===== QUICK STATS =====
-    st.markdown('<div class="section-title">At a Glance</div>', unsafe_allow_html=True)
-    c1, c2, c3, c4 = st.columns(4)
-    stats = [
-        ("5", "Models Tested"),
-        ("5", "Features"),
-        ("74%", "Best Accuracy"),
-        ("SMOTE", "Balancing Method"),
-    ]
-    for col, (val, label) in zip([c1, c2, c3, c4], stats):
-        col.markdown(f"""
-            <div class="metric-card metric-card-accent">
-                <div class="metric-card-value">{val}</div>
-                <div class="metric-card-label">{label}</div>
-            </div>
-        """, unsafe_allow_html=True)
+   
